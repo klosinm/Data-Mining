@@ -1,0 +1,101 @@
+---
+title: "DM335_HW1"
+author: "Monica K"
+date: "1/26/2021"
+output: html_document
+---
+
+```{r, packages, echo = FALSE}
+library(mosaic)
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(data.table)
+library(stargazer)
+library(fastDummies)
+library(epiDisplay)
+library(corrplot)
+library(olsrr)
+```
+
+2. Dataset from: https://www.kaggle.com/shivam2503/diamonds
+```{r, echo = FALSE}
+#Read in data
+diamond <- read_csv('/Users/monicaklosin/Documents/GVSU/Winter2021/DataMining/HW1/diamonds.csv')
+#Filter X1, which is just givng a diamond a number
+diamond$X1 <- NULL
+
+summary(diamond)
+```
+
+3.
+Quantitative: Carat, Depth, Table, x (length), y (width), z (depth)
+Catagorical: Cut, Color, Clarity 
+
+
+4. Mean, Median, Mode of numerical variables
+```{r}
+
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+print("Carat: ")
+mean(diamond$carat)
+median(diamond$carat)
+Mode(diamond$carat)
+
+print("Depth: " )
+mean(diamond$depth)
+median(diamond$depth)
+Mode(diamond$depth)
+
+print("Table: " )
+mean(diamond$table)
+median(diamond$table)
+Mode(diamond$table)
+
+print("x: " )
+mean(diamond$x)
+median(diamond$x)
+Mode(diamond$x)
+
+print("y: " )
+mean(diamond$y)
+median(diamond$y)
+Mode(diamond$y)
+
+print("z: " )
+mean(diamond$z)
+median(diamond$z)
+Mode(diamond$z)
+
+
+```
+
+
+#6. Correlation via scatterplot
+```{r}
+
+
+```
+
+#7. Boxplots
+```{r}
+
+#Carat
+ggplot(diamond, aes(x=carat)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2, type="count") + 
+    xlab("Carat") + ggtitle("Boxplot of Carat weight of Diamonds")
+
+#Depth
+ggplot(diamond, aes(x=depth)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2, type="count") + 
+    xlab("Carat") + ggtitle("Boxplot of Depth value of Diamonds")
+
+#x Length of diamond
+ggplot(diamond, aes(x=x)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2, type="count") + 
+    xlab("Carat") + ggtitle("Boxplot of the Length (x) of Diamonds")
+```
