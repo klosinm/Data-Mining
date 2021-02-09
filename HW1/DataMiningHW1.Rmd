@@ -16,23 +16,25 @@ library(fastDummies)
 library(epiDisplay)
 library(corrplot)
 library(olsrr)
+library(moments)
 ```
 
 2. Dataset from: https://www.kaggle.com/shivam2503/diamonds
 ```{r, echo = FALSE}
 #Read in data
-diamond <- read_csv('/Users/monicaklosin/Documents/GVSU/Winter2021/DataMining/HW1/diamonds.csv')
+diamond <- read_csv('/Users/monicaklosin/Documents/GVSU/Winter2021/DataMining/Data-Mining/HW1/diamonds.csv')
 #Filter X1, which is just givng a diamond a number
 diamond$X1 <- NULL
-
-summary(diamond)
 ```
 
 3.
-Quantitative: Carat, Depth, Table, x (length), y (width), z (depth)
-Catagorical: Cut, Color, Clarity 
+```{r}
+#Quantitative: Carat, Depth, Table, x (length), y (width), z (depth)
+#Categorical: Cut, Color, Clarity 
+```
 
-
+#Postive == right skew
+#Negative == left skew
 4. Mean, Median, Mode of numerical variables
 ```{r}
 
@@ -45,43 +47,103 @@ print("Carat: ")
 mean(diamond$carat)
 median(diamond$carat)
 Mode(diamond$carat)
-
+skewness(diamond$carat)
+print("   ")
 print("Depth: " )
 mean(diamond$depth)
 median(diamond$depth)
 Mode(diamond$depth)
-
+skewness(diamond$depth)
+print("   ")
 print("Table: " )
 mean(diamond$table)
 median(diamond$table)
 Mode(diamond$table)
-
+skewness(diamond$table)
+print("   ")
 print("x: " )
 mean(diamond$x)
 median(diamond$x)
 Mode(diamond$x)
-
+skewness(diamond$x)
+print("   ")
 print("y: " )
 mean(diamond$y)
 median(diamond$y)
 Mode(diamond$y)
-
+skewness(diamond$y)
+print("   ")
 print("z: " )
 mean(diamond$z)
 median(diamond$z)
 Mode(diamond$z)
-
+skewness(diamond$z)
+print("   ")
 
 ```
+5.Compute the IQR for numerical attributes. Based on the IQR, determine the outliers, and decide if we keep the outliers or not.
 
+```{r}
+#IQR found via summary(diamond)
+print("Carat: ")
+summary(diamonds$carat)
+IQRval=iqr(diamonds$carat)
 
-#6. Correlation via scatterplot
+print(IQRval)
+lower = 0.4 - (IQRval * 1.5)
+print(lower)
+higher = 1.04 + (IQRval * 1.5)
+print(higher)
+sum(diamonds$carat>=higher)
+sum(diamonds$carat<lower)
+print("______________________________________________")
+print("x")
+summary(diamonds$x)
+IQRvalx=iqr(diamonds$x)
+
+print(IQRvalx)
+lowerx = 4.710 - (IQRvalx * 1.5)
+print(lowerx)
+higherx = 6.540 + (IQRvalx * 1.5)
+print(higherx)
+sum(diamonds$x>=higherx)
+sum(diamonds$x<lowerx)
+print("______________________________________________")
+print("z")
+summary(diamonds$z)
+IQRvalz=IQR(diamonds$z)
+
+print(IQRvalz)
+lowerz = 2.910 - (IQRvalz * 1.5)
+print(lowerz)
+higherz = 4.040 + (IQRvalz * 1.5)
+print(higherz)
+
+sum(diamonds$z>=higherz)
+sum(diamonds$z<=lowerz)
+```
+
+6. Correlation between numeric attributes
 ```{r}
 
+#Had to calcualte log of price because _______________
+diamond$logPrice = log(diamond$price)
 
+#Between price and carat
+diamond %>% ggplot(aes(carat, logPrice)) + geom_point(aes(color=carat)) + coord_cartesian(ylim = c(5, 10)) + 
+  geom_smooth(method='lm', formula= y~x, color="red", size=.5) 
+
+#Between price and x
+diamond %>% ggplot(aes(x, logPrice)) + geom_point(aes(color=carat)) + coord_cartesian(ylim = c(5, 10)) + 
+  geom_smooth(method='lm', formula= y~x, color="red", size=.5) 
+
+#Between price and depth
+diamond %>% ggplot(aes(depth, logPrice)) + geom_point(aes(color=carat)) + coord_cartesian(ylim = c(5, 10)) + 
+  geom_smooth(method='lm', formula= y~x, color="red", size=.5) 
 ```
 
-#7. Boxplots
+
+7. Boxplots
 ```{r}
 
 #Carat
