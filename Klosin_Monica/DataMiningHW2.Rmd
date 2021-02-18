@@ -1,0 +1,38 @@
+---
+title: "DataMiningHW2"
+author: "Monica K"
+date: "2/18/2021"
+output: html_document
+---
+```{r, packages, echo = FALSE}
+library(mosaic)
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(data.table)
+library(stargazer)
+library(fastDummies)
+library(epiDisplay)
+library(corrplot)
+library(olsrr)
+library(moments)
+```
+
+2. Dataset from: https://www.kaggle.com/shivam2503/diamonds
+```{r, echo = FALSE}
+#Read in data
+diamond <- read_csv('/Users/monicaklosin/Documents/GVSU/Winter2021/DataMining/Data-Mining/HW1/diamonds.csv')
+#Filter X1, which is just givng a diamond a number
+diamond$X1 <- NULL
+```
+```
+
+```{r }
+normalize <- function(x)
+{
+    return((x- min(x)) /(max(x)-min(x)))
+}
+
+# To get a vector, use apply instead of lapply
+#as.data.frame(apply(df$name, normalize))
+```
