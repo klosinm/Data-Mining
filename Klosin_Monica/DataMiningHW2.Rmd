@@ -16,6 +16,13 @@ library(epiDisplay)
 library(corrplot)
 library(olsrr)
 library(moments)
+
+library(data.table)
+library(stargazer)
+
+
+#for scaling
+library(rattle)
 ```
 
 2. Dataset from: https://www.kaggle.com/shivam2503/diamonds
@@ -24,15 +31,149 @@ library(moments)
 diamond <- read_csv('/Users/monicaklosin/Documents/GVSU/Winter2021/DataMining/Data-Mining/HW1/diamonds.csv')
 #Filter X1, which is just givng a diamond a number
 diamond$X1 <- NULL
-```
+
+#copy dataset 
+diamondScale <- diamond$carat
+
+#diamond is unscaled for all scaled tests
+diamondPrice <- diamond$price
 ```
 
-```{r }
-normalize <- function(x)
+#1. Scale the data
+```{r}
+#Min-Max Scaling 
+minmax <- function(x)
 {
     return((x- min(x)) /(max(x)-min(x)))
 }
+mxscaleCarat <- minmax(diamond$carat)
+mxscaleDepth <- minmax(diamond$depth)
+mxscaleTable <- minmax(diamond$table)
+mxscaleX <- minmax(diamond$x)
+mxscaleY <- minmax(diamond$y)
+mxscaleZ <- minmax(diamond$z)
 
-# To get a vector, use apply instead of lapply
-#as.data.frame(apply(df$name, normalize))
+minmaxDiamond <- data.frame(mxscaleCarat,mxscaleDepth, mxscaleTable, mxscaleX,mxscaleY,mxscaleZ, diamondPrice)
+minmaxDiamondPCA <- data.frame(mxscaleCarat,mxscaleDepth, mxscaleTable, mxscaleX,mxscaleY,mxscaleZ)
+
+
+#Z-Score Scaling
+zscaleCarat <- scale(diamond$carat)
+zscaleDepth <- scale(diamond$depth)
+zscaleTable <- scale(diamond$table)
+zscaleX <- scale(diamond$x)
+zscaleY <- scale(diamond$y)
+zscaleZ <- scale(diamond$z)
+zscalePrice <- scale(diamond$price)
+
+zscaleDiamond <- data.frame(zscaleCarat,zscaleDepth, zscaleTable, zscaleX,zscaleY,zscaleZ, diamondPrice)
+zscaleDiamondPCA <- data.frame(zscaleCarat,zscaleDepth, zscaleTable, zscaleX,zscaleY,zscaleZ )
+
+#Seeing it work for variable carat
+histogram(~carat, main="Distribution of Carat", data = diamond, type="count")
+histogram(~mxscaleCarat, main="Distribution of min-max scaleCarat", type="count")
+histogram(~zscaleCarat, main="Distribution of z-scale scaleCarat", type="count")
+```
+
+#2
+```{r}
+#Zscore full model 
+zDiamondFM <- lm(diamondPrice ~ zscaleCarat + zscaleTable + zscaleDepth  + zscaleY + zscaleX + zscaleZ, data = zscaleDiamond)
+
+print("PCA: ")
+library(ggfortify)
+res.pca <- prcomp(zscaleDiamondPCA)
+res.pca
+summary(res.pca)
+
+
+print("Forward Selection: ")
+fzmodel <- stepAIC(zDiamondFM, direction = "forward")
+fzmodel
+
+print("Backward Selection: ")
+bzmodel = ols_step_backward_p(zDiamondFM)
+bzmodel
+```
+
+```{r}
+#Min-Max full model 
+mxDiamondFM <- lm(diamondPrice ~ mxscaleCarat + mxscaleTable + mxscaleDepth  + mxscaleY + mxscaleX + mxscaleZ, data = minmaxDiamond)
+
+print("PCA: ")
+mx.pca <- prcomp(minmaxDiamondPCA)
+mx.pca
+summary(mx.pca)
+
+
+print("Forward Selection: ")
+fmxmodel <- stepAIC(mxDiamondFM, direction = "forward")
+fmxmodel
+
+print("Backward Selection: ")
+bmxmodel = ols_step_backward_p(mxDiamondFM)
+bmxmodel
+```
+
+
+#2
+```{r}
+#Other scaler, robust scaler 
+
+robust <- function(x)
+{
+   return (x - quantile(x, .25))/(quantile(x, .75) - quantile(x, .25))
+}
+
+rCarat <- robust(diamond$carat)
+
+rCarat <- robust(diamond$carat)
+rDepth <- robust(diamond$depth)
+rTable <- robust(diamond$table)
+rX <- robust(diamond$x)
+rY <- robust(diamond$y)
+rZ <- robust(diamond$z)
+
+robustDiamond <- data.frame(rCarat,rDepth, rTable, rX,rY,rZ, diamondPrice)
+robustDiamondPCA <- data.frame(rCarat,rDepth, rTable, rX,rY,rZ)
+
+
+robustDiamondFM <- lm(diamondPrice ~ rCarat + rDepth + rTable  + rY + rX + rZ, data = robustDiamond)
+
+print("PCA: ")
+r.pca <- prcomp(robustDiamondPCA)
+r.pca
+summary(r.pca)
+
+
+print("Forward Selection: ")
+frmodel <- stepAIC(robustDiamondFM, direction = "forward")
+frmodel
+
+print("Backward Selection: ")
+brmodel = ols_step_backward_p(robustDiamondFM)
+brmodel
+
+#Other feature, 
+```
+
+#3
+```{r}
+#Diamond Full Model
+numDiamondFM <- lm(diamond.price ~ diamond.carat + diamond.table + diamond.depth  + diamond.y + diamond.x + diamond.z, data = NumericDiamond)
+
+print("PCA: ")
+num.pca <- prcomp(NumericDiamond)
+num.pca
+summary(num.pca)
+
+
+print("Forward Selection: ")
+numfmodel <- stepAIC(numDiamondFM, direction = "forward")
+numfmodel
+
+print("Backward Selection: ")
+numbmodel = ols_step_backward_p(numDiamondFM)
+numbmodel
+
 ```
