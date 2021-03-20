@@ -137,6 +137,7 @@ rZ <- robust(diamond$z)
 robustDiamond <- data.frame(rCarat,rDepth, rTable, rX,rY,rZ, diamondPrice)
 robustDiamondPCA <- data.frame(rCarat,rDepth, rTable, rX,rY,rZ)
 
+histogram(~rCarat, main="Distribution of robust-scale scaleCarat", type="count")
 
 robustDiamondFM <- lm(diamondPrice ~ rCarat + rDepth + rTable  + rY + rX + rZ, data = robustDiamond)
 
@@ -162,11 +163,11 @@ brmodel
 #Diamond Full Model
 numDiamondFM <- lm(diamond.price ~ diamond.carat + diamond.table + diamond.depth  + diamond.y + diamond.x + diamond.z, data = NumericDiamond)
 
+DiamondPCA <- data.frame(diamond$carat, diamond$table, diamond$depth, diamond$x, diamond$y, diamond$z)
 print("PCA: ")
-num.pca <- prcomp(NumericDiamond)
+num.pca <- prcomp(DiamondPCA)
 num.pca
 summary(num.pca)
-
 
 print("Forward Selection: ")
 numfmodel <- stepAIC(numDiamondFM, direction = "forward")
@@ -175,5 +176,6 @@ numfmodel
 print("Backward Selection: ")
 numbmodel = ols_step_backward_p(numDiamondFM)
 numbmodel
+
 
 ```
